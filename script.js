@@ -830,3 +830,179 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 
   loadTestimonials();
 })();
+
+
+// Writing Section - Hashnode API Fetch
+
+(async function initWritingSection() {
+  const HASHNODE_USERNAME = 'analystyuchels';
+ 
+  const POSTS_TO_SHOW = 3;
+ 
+  const grid = document.getElementById('writingGrid');
+  const ctaWrap = document.getElementById('writingCta');
+  const ctaLink = document.getElementById('writingCtaLink');
+ 
+  if (!grid) return;
+ 
+  const blogUrl = `https://${HASHNODE_USERNAME}.hashnode.dev`;
+  if (ctaLink) ctaLink.href = blogUrl;
+ 
+  const QUERY = `
+    query GetRecentPosts($host: String!, $first: Int!) {
+      publication(host: $host) {
+        posts(first: $first) {
+          edges {
+            node {
+              title
+              brief
+              publishedAt
+              url
+              coverImage { url }
+            }
+          }
+        }
+      }
+    }
+  `;
+ 
+  // Format ISO date string → "17 April 2026"
+  function formatDate(isoString) {
+    return new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    }).format(new Date(isoString));
+  }
+ 
+  function buildPostCard(post) {
+    const card = document.createElement('a');
+    card.href = post.url;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+    card.className = 'post-card reveal';
+    card.setAttribute('aria-label', `Read: ${post.title} (opens in new tab)`);
+ 
+    // Cover image — only if the post has one
+    if (post.coverImage?.url) {
+      const wrap = document.createElement('div');
+      wrap.className = 'post-card-cover-wrap';
+      const img = document.createElement('img');
+      img.src = post.coverImage.url;
+      img.alt = '';
+      img.className = 'post-card-cover';
+      img.loading = 'lazy';
+      wrap.appendChild(img);
+      card.appendChild(wrap);
+    }
+ 
+    // Card body
+    const body = document.createElement('div');
+    body.className = 'post-card-body';
+ 
+    const date = document.createElement('p');
+    date.className = 'post-card-date';
+    date.textContent = formatDate(post.publishedAt);
+ 
+    const title = document.createElement('h3');
+    title.className = 'post-card-title';
+    title.textContent = post.title;
+ 
+    const excerpt = document.createElement('p');
+    excerpt.className = 'post-card-excerpt';
+    excerpt.textContent = post.brief || '';
+ 
+    const readMore = document.createElement('span');
+    readMore.className = 'post-card-read';
+    readMore.innerHTML = `Read article
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <line x1="7" y1="17" x2="17" y2="7"/>
+        <polyline points="7 7 17 7 17 17"/>
+      </svg>`;
+ 
+    body.appendChild(date);
+    body.appendChild(title);
+    body.appendChild(excerpt);
+    body.appendChild(readMore);
+    card.appendChild(body);
+ 
+    return card;
+  }
+ 
+  // Fallback shown when fetch fails or username not set
+  function showFallback() {
+    grid.innerHTML = `
+      <div class="writing-fallback">
+        <div class="writing-fallback-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </div>
+        <h3>Writing on Hashnode</h3>
+        <p>I write about web development, technical documentation, and lessons from building real projects.</p>
+        <a href="${blogUrl}" class="btn btn-primary" target="_blank" rel="noopener noreferrer" style="margin-top:0.5rem;">
+          Visit my Blog
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>`;
+  }
+ 
+  // Check username hasn'tbeen left as the placeholder
+  if (HASHNODE_USERNAME === 'your-hashnode-username') {
+    console.warn(
+      'Writing section: Hashnode username not set.\n' +
+      "Open script.js, find HASHNODE_USERNAME, and replace 'your-hashnode-username'\n" +
+      'with your real Hashnode username (the part after hashnode.com/@).'
+    );
+    showFallback();
+    return;
+  }
+ 
+  // Fetch posts from Hashnode's GraphQL API
+  try {
+    const response = await fetch('https://gql.hashnode.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: QUERY,
+        variables: {
+          host:  `${HASHNODE_USERNAME}.hashnode.dev`,
+          first: POSTS_TO_SHOW,
+        },
+      }),
+    });
+ 
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+ 
+    const json  = await response.json();
+    const edges = json?.data?.publication?.posts?.edges;
+ 
+    if (!edges || edges.length === 0) {
+      showFallback();
+      return;
+    }
+ 
+    grid.innerHTML = '';
+    edges.forEach(({ node: post }) => {
+      const card = buildPostCard(post);
+      grid.appendChild(card);
+      // Trigger scroll-reveal on dynamically added cards
+      if (typeof revealObserver !== 'undefined') {
+        revealObserver.observe(card);
+      }
+    });
+ 
+    // Show the "Read All Articles" CTA button
+    if (ctaWrap) ctaWrap.hidden = false;
+ 
+  } catch (err) {
+    console.warn('Writing section: could not fetch posts.', err.message);
+    showFallback();
+  }
+ 
+})();
