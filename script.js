@@ -150,7 +150,7 @@ function initParticles() {
       p.y += p.vy;
 
       // Bounce off edges when a particle reaches the wall, flip its velocity to reverse direction
-      if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
       if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
  
       // Draw the dot
@@ -247,7 +247,7 @@ sections.forEach((section) => sectionObserver.observe(section));
 
 // Mobile Menu - Hamburger Toggle
 
-const hamburger  = document.getElementById('hamburger');
+const hamburger = document.getElementById('hamburger');
 const navLinksEl = document.getElementById('nav-links');
  
 function openMenu() {
@@ -334,8 +334,8 @@ document.querySelectorAll('.reveal, .reveal-children').forEach((el) => {
 
 // Contact Form - Validation + Formspree Submit
 
-const contactForm  = document.getElementById('contactForm');
-const submitBtn    = document.getElementById('submitBtn');
+const contactForm = document.getElementById('contactForm');
+const submitBtn = document.getElementById('submitBtn');
 const formFeedback = document.getElementById('formFeedback');
  
 if (contactForm) {
@@ -348,9 +348,9 @@ if (contactForm) {
 
     // Helper: show an error message below a field
     function showError(fieldId, message) {
-      const field    = document.getElementById(fieldId);
-      const errorEl  = field?.nextElementSibling;
-      if (field)   field.classList.add('error');
+      const field = document.getElementById(fieldId);
+      const errorEl = field?.nextElementSibling;
+      if (field) field.classList.add('error');
       if (errorEl) errorEl.textContent = message;
       isValid = false;
     }
@@ -359,7 +359,7 @@ if (contactForm) {
     function clearError(fieldId) {
       const field = document.getElementById(fieldId);
       const errorEl = field?.nextElementSibling;
-      if (field)   field.classList.remove('error');
+      if (field) field.classList.remove('error');
       if (errorEl) errorEl.textContent = '';
     }
  
@@ -391,14 +391,14 @@ if (contactForm) {
     if (!isValid) return;
 
     // Submit to Formspree
-    const btnText    = submitBtn.querySelector('.btn-text');
+    const btnText = submitBtn.querySelector('.btn-text');
     const btnLoading = submitBtn.querySelector('.btn-loading');
-    const btnIcon    = submitBtn.querySelector('.btn-icon');
+    const btnIcon = submitBtn.querySelector('.btn-icon');
  
     submitBtn.disabled = true;
-    if (btnText)    btnText.hidden    = true;
+    if (btnText) btnText.hidden = true;
     if (btnLoading) btnLoading.hidden = false;
-    if (btnIcon)    btnIcon.hidden    = true;
+    if (btnIcon) btnIcon.hidden = true;
  
     try {
       // FormData serializes all form fields into the right format for HTTP
@@ -406,8 +406,8 @@ if (contactForm) {
  
       // fetch() makes an HTTP request. We await the response.
       const response = await fetch(contactForm.action, {
-        method:  'POST',
-        body:    data,
+        method: 'POST',
+        body: data,
         headers: { 'Accept': 'application/json' },
 
         // Accept: application/json tells Formspree to return JSON instead of redirecting. It is needed for AJAX submissions.
@@ -420,8 +420,7 @@ if (contactForm) {
       } else {
         // Formspree returned an error (e.g. form not configured yet)
         const json = await response.json().catch(() => ({}));
-        const msg  = json.errors?.map(e => e.message).join(', ')
-                   || 'Something went wrong. Please try again.';
+        const msg = json.errors?.map(e => e.message).join(', ') || 'Something went wrong. Please try again.';
         showFeedback('error', msg);
       }
  
@@ -433,9 +432,9 @@ if (contactForm) {
     } finally {
       // Restore button state regardless of success/failure
       submitBtn.disabled = false;
-      if (btnText)    btnText.hidden    = false;
+      if (btnText) btnText.hidden = false;
       if (btnLoading) btnLoading.hidden = true;
-      if (btnIcon)    btnIcon.hidden    = false;
+      if (btnIcon) btnIcon.hidden = false;
     }
   });
  
@@ -456,9 +455,9 @@ if (contactForm) {
  
 function showFeedback(type, message) {
   if (!formFeedback) return;
-  formFeedback.className  = `form-feedback ${type}`;
+  formFeedback.className = `form-feedback ${type}`;
   formFeedback.textContent = message;
-  formFeedback.hidden      = false;
+  formFeedback.hidden = false;
   // Scroll the feedback into view smoothly
   formFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   // Hide after 6 seconds
@@ -507,13 +506,13 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   }
   
   // Grab all the DOM elements we'll interact with
-  const track      = document.getElementById('testimonialsTrack');
-  const nav        = document.getElementById('testimonialsNav');
-  const prevBtn    = document.getElementById('testimonialPrev');
-  const nextBtn    = document.getElementById('testimonialNext');
-  const dotsEl     = document.getElementById('testimonialDots');
-  const form       = document.getElementById('testimonialForm');
-  const submitBtn  = document.getElementById('testimonialSubmitBtn');
+  const track = document.getElementById('testimonialsTrack');
+  const nav = document.getElementById('testimonialsNav');
+  const prevBtn = document.getElementById('testimonialPrev');
+  const nextBtn = document.getElementById('testimonialNext');
+  const dotsEl = document.getElementById('testimonialDots');
+  const form = document.getElementById('testimonialForm');
+  const submitBtn = document.getElementById('testimonialSubmitBtn');
   const feedbackEl = document.getElementById('testimonialFeedback');
 
   if (!track) return;
@@ -528,7 +527,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 
   // Carousel state
   let currentPage = 0;
-  let totalCards  = 0;
+  let totalCards = 0;
 
   // Helper: cards per page based on viewport
   function cardsPerPage() {
@@ -558,7 +557,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   // Helper: slide to page
   function goTo(pageIndex) {
     if (totalCards === 0) return;
-    const cpp   = cardsPerPage();
+    const cpp = cardsPerPage();
     const pages = totalPages();
     currentPage = Math.max(0, Math.min(pageIndex, pages - 1));
  
@@ -589,7 +588,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     const body = document.createElement('div');
     body.className = 'testimonial-body';
     const quote = document.createElement('p');
-    quote.className   = 'testimonial-text';
+    quote.className = 'testimonial-text';
     quote.textContent = t.message; // textContent = safe — no HTML injection
     body.appendChild(quote);
  
@@ -605,7 +604,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       .join('');
  
     const avatar = document.createElement('div');
-    avatar.className   = 'testimonial-avatar';
+    avatar.className = 'testimonial-avatar';
     avatar.textContent = initials;
     avatar.setAttribute('aria-hidden', 'true');
  
@@ -613,11 +612,11 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     meta.className = 'testimonial-meta';
  
     const nameEl = document.createElement('span');
-    nameEl.className   = 'testimonial-name';
+    nameEl.className = 'testimonial-name';
     nameEl.textContent = t.name;
  
     const roleEl = document.createElement('span');
-    roleEl.className   = 'testimonial-role';
+    roleEl.className = 'testimonial-role';
     roleEl.textContent = t.role;
  
     meta.appendChild(nameEl);
@@ -738,40 +737,40 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       let valid = true;
  
       function fieldError(id, msg) {
-        const el    = document.getElementById(id);
+        const el = document.getElementById(id);
         const errEl = el?.nextElementSibling;
-        if (el)    el.classList.add('error');
+        if (el) el.classList.add('error');
         if (errEl) errEl.textContent = msg;
         valid = false;
       }
  
       function clearFieldError(id) {
-        const el    = document.getElementById(id);
+        const el = document.getElementById(id);
         const errEl = el?.nextElementSibling;
-        if (el)    el.classList.remove('error');
+        if (el) el.classList.remove('error');
         if (errEl) errEl.textContent = '';
       }
  
       ['t-name', 't-role', 't-message'].forEach(clearFieldError);
  
-      const name    = document.getElementById('t-name')?.value.trim();
-      const role    = document.getElementById('t-role')?.value.trim();
+      const name = document.getElementById('t-name')?.value.trim();
+      const role = document.getElementById('t-role')?.value.trim();
       const message = document.getElementById('t-message')?.value.trim();
  
-      if (!name)    fieldError('t-name',    'Please enter your name.');
-      if (!role)    fieldError('t-role',    'Please enter your role or relationship.');
+      if (!name) fieldError('t-name', 'Please enter your name.');
+      if (!role) fieldError('t-role', 'Please enter your role or relationship.');
       if (!message) fieldError('t-message', 'Please write your testimonial.');
  
       if (!valid) return;
 
       // Show loading state on button
-      const btnText    = submitBtn?.querySelector('.btn-text');
+      const btnText = submitBtn?.querySelector('.btn-text');
       const btnLoading = submitBtn?.querySelector('.btn-loading');
-      const btnIcon    = submitBtn?.querySelector('.btn-icon');
-      if (submitBtn)  submitBtn.disabled = true;
-      if (btnText)    btnText.hidden     = true;
-      if (btnLoading) btnLoading.hidden  = false;
-      if (btnIcon)    btnIcon.hidden     = true;
+      const btnIcon = submitBtn?.querySelector('.btn-icon');
+      if (submitBtn) submitBtn.disabled = true;
+      if (btnText) btnText.hidden = true;
+      if (btnLoading) btnLoading.hidden = false;
+      if (btnIcon) btnIcon.hidden = true;
 
       try {
         const { error } = await db
@@ -795,10 +794,10 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         );
       } finally {
         // Restore button regardless of outcome
-        if (submitBtn)  submitBtn.disabled = false;
-        if (btnText)    btnText.hidden     = false;
-        if (btnLoading) btnLoading.hidden  = true;
-        if (btnIcon)    btnIcon.hidden     = false;
+        if (submitBtn) submitBtn.disabled = false;
+        if (btnText) btnText.hidden = false;
+        if (btnLoading) btnLoading.hidden = true;
+        if (btnIcon) btnIcon.hidden = false;
       }
     });
  
@@ -820,9 +819,9 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   // Inline form feedback helper
   function showFormFeedback(type, message) {
     if (!feedbackEl) return;
-    feedbackEl.className   = `form-feedback ${type}`;
+    feedbackEl.className = `form-feedback ${type}`;
     feedbackEl.textContent = message;
-    feedbackEl.hidden      = false;
+    feedbackEl.hidden = false;
     feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     setTimeout(() => { feedbackEl.hidden = true; }, 8000);
   }
