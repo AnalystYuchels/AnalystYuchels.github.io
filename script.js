@@ -474,7 +474,7 @@ function showFeedback(type, message) {
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener('click', (e) => {
     const targetId = anchor.getAttribute('href');
-    if (targetId === '#') return;  // Skip bare # links (CV button placeholder)
+    if (targetId === '#') return;
  
     const targetEl = document.querySelector(targetId);
     if (!targetEl) return;
