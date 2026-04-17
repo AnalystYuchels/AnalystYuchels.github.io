@@ -493,8 +493,18 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 // Testimonials
 
 (function initTestimonials() {
-  const SUPABASE_URL = 'https://ljawamabjuakbykldxid.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqYXdhbWFianVha2J5a2xkeGlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMjY2NDAsImV4cCI6MjA5MTkwMjY0MH0.DjtBh5tdEJyWbcLoXVHWFluaeM0HxFvObccmqzyg_Ks';
+  const cfg = window.APP_CONFIG || {};
+  const SUPABASE_URL = cfg.SUPABASE_URL || '';
+  const SUPABASE_PUBLISHABLE_KEY = cfg.SUPABASE_PUBLISHABLE_KEY || '';
+
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY || SUPABASE_URL.includes('ljawamabjuakbykldxid') || SUPABASE_PUBLISHABLE_KEY.includes('sb_publishable_dM0m1ehIvZ_2pwmhlyFxbg_SzF78eDN')) {
+    console.warn(
+      'Testimonials: Supabase credentials missing or using placeholders.\n' + 
+      'Copy config.js → add your SUPABASE_URL\n' + 
+      'and SUPABASE_PUBLISHABLE_KEY (the sb_publishable_... key).\n' + 
+      'See SUPABASE_SETUP.md for instructions.'
+    );
+  }
   
   // Grab all the DOM elements we'll interact with
   const track      = document.getElementById('testimonialsTrack');
@@ -508,7 +518,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 
   if (!track) return;
 
-  const db = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const db = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
  
   if (!db) {
     console.warn('Supabase client not available. Check CDN script and credentials.');
