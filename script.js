@@ -82,6 +82,8 @@
 
 // Page Load
 
+document.documentElement.classList.add('js-loaded');
+
 window.addEventListener('load', () => {
   // Short delay before the underline draws in - gives hero text time to appear first
   setTimeout(() => {

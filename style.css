@@ -1762,3 +1762,164 @@ textarea {
   transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
+
+.reveal.visible,
+.reveal-children.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Safety Fallback — if JavaScript fails to load entirely */
+html:not(.js-loaded) .reveal,
+html:not(.js-loaded) .reveal-children > * {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.reveal-children.visible > *:nth-child(1) { transition-delay: 0.05s; }
+.reveal-children.visible > *:nth-child(2) { transition-delay: 0.15s; }
+.reveal-children.visible > *:nth-child(3) { transition-delay: 0.25s; }
+.reveal-children.visible > *:nth-child(4) { transition-delay: 0.35s; }
+.reveal-children.visible > *:nth-child(5) { transition-delay: 0.45s; }
+
+/* Keyframe Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+  50%       { opacity: 1;   transform: scaleY(1); }
+}
+
+
+/* Media Queries - Responsive Design */
+
+@media (max-width: 900px) {
+   .about-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+ 
+  .about-image-wrap {
+    max-width: 340px;
+    margin: 0 auto;
+  }
+ 
+  .section-header--left {
+    text-align: center;
+  }
+ 
+  .about-text .btn {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    margin: 1.5rem auto 0;
+  }
+}
+ 
+@media (max-width: 768px) {
+   .hamburger {
+    display: flex;
+  }
+ 
+  .nav-links {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.97);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    gap: 0;
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-border);
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+ 
+  .nav-links.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+ 
+  .nav-link {
+    padding: var(--space-md) var(--space-xl);
+    font-size: 1rem;
+    display: block;
+  }
+ 
+  .nav-link::after {
+    display: none;
+  }
+ 
+  .services, .tech, .projects, .about, .contact {
+    padding: var(--space-3xl) 0;
+  }
+ 
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+ 
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+ 
+  .footer-social {
+    justify-content: center;
+  }
+ 
+  .scroll-indicator {
+    display: none;
+  }
+}
+ 
+@media (max-width: 480px) {
+  .container {
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+ 
+  .hero-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+ 
+  .hero-cta .btn {
+    width: 100%;
+    justify-content: center;
+  }
+ 
+  .project-links {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+}
+
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+ 
+  html {
+    scroll-behavior: auto;
+  }
+}
