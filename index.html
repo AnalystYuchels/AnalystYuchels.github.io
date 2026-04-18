@@ -3,25 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uchechi Uche - Full-Stack Developer</title>
-
-  <!-- SEO: The description Google shows under the link in search results -->
+  <title>Uchechi Uche - Full-Stack Developer &amp; Technical Writer</title>
   <meta name="description" content="Uchechi Uche is a full-stack web developer, technical writer, and technical support specialist building clean, purposeful software.">
-
-  <!-- Open Graph tags: What appears when someone shares my link on SM; controls the preview card -->
   <meta property="og:title" content="Uchechi Uche - Full-Stack Web Developer">
   <meta property="og:description" content="Building clean, purposeful web experiences.">
   <meta property="og:type" content="website">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <!-- Stylesheet -->
   <!-- Anti-Flash Theme Script -->
   <script>
     (function() {
@@ -36,7 +27,6 @@
     })();
   </script>
 
-  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <link rel="stylesheet" href="style.css"> 
 </head>
@@ -44,9 +34,50 @@
 <body>
   
   <!-- Navbar -->
+
   <nav class="Navbar" id="navbar" role="navigation" aria-label="Main navigation">
     <div class="nav-inner">
-      <a href="#home" class="nav-logo" aria-label="Go to top">Uchechi <span class="logo-accent">Uche</span></a>
+      <a href="#home" class="nav-logo" aria-label="Go to top">
+        <img src="assets/images/uchechi.png" alt="Uchechi Uche" class="nav-avatar" onerror="this.style.display='none'">
+        <span>Uchechi <span class="logo-accent">Uche</span></span>
+      </a>
+
+      <ul class="nav-links" id="nav-links" role="list">
+        <li><a href="#home" class="nav-link">Home</a></li>
+        <li><a href="#projects" class="nav-link">Projects</a></li>
+        <li><a href="#writing" class="nav-link">Writing</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+ 
+      <!-- Right controls: theme toggle + Download CV -->
+      <div class="nav-controls">
+        <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode" title="Toggle colour theme">
+          <svg class="theme-icon theme-icon--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z">
+          </svg>
+          <svg class="theme-icon theme-icon--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5">
+            <line x1="12" y1="1" x2="12" y2="3">
+            <line x1="12" y1="21" x2="12" y2="23">
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64">
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78">
+            <line x1="1" y1="12" x2="3" y2="12">
+            <line x1="21" y1="12" x2="23" y2="12">
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36">
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22">
+          </svg>
+        </button>
+ 
+        <a href="#" class="nav-cv-btn" id="navCvPill" target="_blank" rel="noopener noreferrer" aria-label="Download CV">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4">
+            <polyline points="7 10 12 15 17 10">
+            <line x1="12" y1="15" x2="12" y2="3">
+          </svg>
+          Download CV
+        </a>
+      </div>
 
       <!-- Hamburger Button (mobile only) -->
       <button class="hamburger" id="hamburger" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation menu">
@@ -55,49 +86,6 @@
         <span></span>
       </button>
 
-      <!-- Nav links -->
-      <ul class="nav-links" id="nav-links" role="list">
-      <li><a href="#home" class="nav-link">Home</a></li>
-      <li><a href="#projects" class="nav-link">Projects</a></li>
-      <li><a href="#writing" class="nav-link">Writing</a></li>
-      <li><a href="#about" class="nav-link">About</a></li>
-      <li><a href="#contact" class="nav-link">Contact</a></li>
-      </ul>
-
-      <!-- Theme Toggle Button -->
-      <button
-        class="theme-toggle"
-        id="themeToggle"
-        aria-label="Switch to light mode"
-        title="Toggle colour theme"
-      >
-        <!-- Moon icon — shown when site is in DARK mode (click to go light) -->
-        <svg class="theme-icon theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z">
-        </svg>
-        <!-- Sun icon — shown when site is in LIGHT mode (click to go dark) -->
-        <svg class="theme-icon theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="5">
-          <line x1="12" y1="1" x2="12" y2="3">
-          <line x1="12" y1="21" x2="12" y2="23">
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64">
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78">
-          <line x1="1" y1="12" x2="3" y2="12">
-          <line x1="21" y1="12" x2="23" y2="12">
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36">
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22">
-        </svg>
-      </button>
-
-      <!-- Download CV Pill (navbar) -->
-      <a href="#" class="nav-cv-pill" id="navCvPill" target="_blank" rel="noopener noreferrer" aria-label="Download Uchechi's CV (opens in new tab)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4">
-          <polyline points="7 10 12 15 17 10">
-          <line x1="12" y1="15" x2="12" y2="3">
-        </svg>
-        <span class="cv-pill-text">Download CV</span>
-      </a>
     </div>
   </nav>
 
@@ -109,22 +97,20 @@
     <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
  
     <div class="hero-content">
+
       <div class="hero-text">
- 
         <p class="hero-eyebrow">
           <span class="eyebrow-line" aria-hidden="true"></span>
           Full-Stack Developer · Technical Writer
         </p>
- 
         <h1 class="hero-title">
           Hi, I'm <span class="highlight">Uchechi Uche</span>.<br>
-          I build things for<br>
-          <em>the web.</em>
+          <span id="typewriterText" data-words='["build things for the web.","write clear documentation.","solve technical problems."]'></span>
+          <span class="typewriter-cursor" id="typewriterCursor" aria-hidden="true"></span>
         </h1>
  
         <p class="hero-sub">
-          I write clean code, clear documentation, and deliver
-          technical support that actually solves problems.
+          I write clean code, clear documentation, and deliver technical support that actually solves problems.
         </p>
  
         <div class="hero-cta">
@@ -138,23 +124,51 @@
           
           <a href="#" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" aria-label="View Uchechi's resume in Google Drive (opens in new tab)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z">
+              <circle cx="12" cy="12" r="3">
             </svg>
             Resume
           </a>
         </div>
- 
       </div>
+
+      <div class="hero-right">
  
-      <div class="hero-photo-wrap" id="heroPhotoWrap">
-        <img
-          src="assets/images/uchechi.jpg"
-          alt="Portrait of Uchechi Uche"
-          class="hero-photo"
-          loading="eager"
-          onerror="document.getElementById('heroPhotoWrap').style.display='none'"
-        >
-        <div class="hero-photo-border" aria-hidden="true"></div>
+        <div class="hero-social" aria-label="Social links">
+          <a href="https://github.com/AnalystYuchels" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="hero-social-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 
+              1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">  
+            </svg>
+          </a>
+          <a href="https://www.linkedin.com/in/uchechiuche/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="hero-social-link">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 
+              3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 
+              0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z">
+            </svg>
+          </a>
+          <a href="https://x.com/analystyuchels" target="_blank" rel="noopener noreferrer" aria-label="Twitter" class="hero-social-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+            </svg>
+          </a>
+          <a href="mailto:uche4xploit@gmail.com" aria-label="Email" class="hero-social-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+              <polyline points="22,6 12,13 2,6">
+            </svg>
+          </a>
+        </div>
+ 
+        <div class="hero-photo-wrap" id="heroPhotoWrap">
+          <img src="assets/images/uchechi.png" alt="Portrait of Uchechi Uche" class="hero-photo" loading="eager"
+            onerror="document.getElementById('heroPhotoWrap').style.display='none'"
+          >
+          <span class="photo-corner photo-corner--tl" aria-hidden="true"></span>
+          <span class="photo-corner photo-corner--br" aria-hidden="true"></span>
+        </div>
+
       </div>
  
     </div>
@@ -171,7 +185,6 @@
 
   <section class="services" id="services" aria-label="Services">
     <div class="container">
-
       <div class="section-header">
         <span class="section-tag">Expertise</span>
         <h2 class="section-title">What I Do</h2>
@@ -185,16 +198,23 @@
 
             <!-- Code / brackets icon -->
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6">
-              <polyline points="8 6 2 12 8 18">
+              <rect x="2" y="3" width="20" height="14" rx="2">
+              <line x1="8" y1="21" x2="16" y2="21">
+              <line x1="12" y1="17" x2="12" y2="21">
+              <polyline points="9 9 12 6 15 9">
             </svg>
           </div>
+
           <h3>Full-Stack Web Development</h3>
-          <p>
-            End-to-end web applications - from server-side APIs and databases to responsive, accessible front-ends. I work with Node.js, Express, 
-            PostgreSQL, EJS, HTML5, CSS3, JavaScript(ES6+), RESTful API design, Git & GitHub, MVC architecture, Authentication & session management. 
-            I am constantly learning more.
-          </p>
+          <div class="service-text-wrap">
+            <p>
+              I craft complete, end-to-end web applications tailored to your needs, covering every aspect from designing robust server-side APIs and managing relational 
+              databases to developing responsive, accessible, and user-friendly front-end interfaces. My expertise includes practical experience with Node.js, Express, PostgreSQL, EJS, HTML5, CSS3, 
+              and modern JavaScript (ES6+), along with RESTful API design, Git and GitHub workflows, MVC architecture, and secure authentication and session management. 
+              I’m committed to continuously expanding my skills and refining my approach through ongoing learning to deliver the best solutions for you.
+            </p>
+            <button class="read-more-btn" aria-expanded="false">Read more</button>
+          </div>
         </article>
 
         <article class="service-card" aria-label="Technical Writing">
@@ -203,30 +223,53 @@
 
             <!-- Pen / document icon -->
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 20h9">
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
+              <polyline points="14 2 14 8 20 8">
+              <line x1="16" y1="13" x2="8" y2="13">
+              <line x1="16" y1="17" x2="8" y2="17">
+              <line x1="10" y1="9" x2="8" y2="9">
             </svg>
           </div>
+
           <h3>Technical Writing</h3>
-          <p>
-            Clear, structured documentation that bridges the gap between complex systems and the people who use them. API docs, guides, and tutorials 
-            written for real humans.
-          </p>
+          <div class="service-text-wrap">
+            <p>
+              When it comes to crafting clear, well-structured documentation tailored to you, transforming complex systems into language that real people can easily 
+              understand and apply, I do a fantastic job. Whether it’s API documentation, user guides, or step-by-step tutorials, I prioritize clarity, flow, and practicality 
+              so both developers and end users can confidently navigate the tools and systems they depend on.
+            </p>
+            <button class="read-more-btn" aria-expanded="false">Read more</button>
+          </div>
         </article>
 
         <article class="service-card" aria-label="Technical Support">
           <span class="card-number" aria-hidden="true">03</span>
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z">
-              <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
+              <polyline points="9 12 11 14 15 10">
             </svg>
           </div>
+
           <h3>Technical Support</h3>
-          <p>
-            Methodical, empathetic troubleshooting that diagnoses root causes. I communicate clearly across technical and non-technical audiences.
-          </p>
+          <div class="service-text-wrap">
+            <p>
+              I approach troubleshooting with patience, empathy, and a methodical mindset that prioritises identifying root causes over quick fixes. I communicate 
+              findings and solutions clearly, tailoring my explanations for both technical teams and non-technical stakeholders to ensure everyone remains informed and aligned.
+            </p>
+            <button class="read-more-btn" aria-expanded="false">Read more</button>
+          </div>
         </article>
+      </div>
+
+      <!-- CTA button -->
+      <div class="services-cta">
+        <a href="#contact" class="btn btn-primary">
+          Let's Work Together
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7">
+          </svg>
+        </a>
       </div>
 
     </div>
@@ -237,95 +280,15 @@
 
   <section class="tech" id="tech" aria-label="Technologies">
     <div class="container">
-
       <div class="section-header">
         <span class="section-tag">Stack</span>
         <h2 class="section-title">Technologies I Work With</h2>
+        <p class="section-sub">
+          My toolkit for building full-stack applications — always learning and adapting.
+        </p>
       </div>
 
-      <!-- Tech Pills -->
-      <div class="tech-grid" role="list" aria-label="Technology list">
-
-        <!-- Frontend -->
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="" aria-hidden="true">
-          HTML5
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="" aria-hidden="true">
-          CSS3
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="" aria-hidden="true">
-          JavaScript
-        </div>
-
-        <!-- Backend -->
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="" aria-hidden="true">
-          Node.js
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" alt="" aria-hidden="true" style="filter: invert(1);">
-          Express
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <!-- EJS doesn't have a devicon, so we use a custom badge -->
-          <span class="tech-text-icon" aria-hidden="true">EJS</span>
-          EJS
-        </div>
-
-        <!-- Database -->
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="" aria-hidden="true">
-          PostgreSQL
-        </div>
-
-        <!-- Tools -->
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="" aria-hidden="true">
-          Git
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="" aria-hidden="true" style="filter: invert(0.8);">
-          GitHub
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg" alt="" aria-hidden="true">
-          npm
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="" aria-hidden="true" />
-          VS Code
-        </div>
-
-        <!-- Concepts / Architecture -->
-        <div class="tech-pill" role="listitem">
-          <span class="tech-text-icon" aria-hidden="true">REST</span>
-          RESTful API
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <span class="tech-text-icon" aria-hidden="true">MVC</span>
-          MVC Architecture
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <span class="tech-text-icon" aria-hidden="true">AUTH</span>
-          Authentication
-        </div>
-
-        <div class="tech-pill" role="listitem">
-          <span class="tech-text-icon" aria-hidden="true">SESS</span>
-          Session Management
-        </div>
+      
 
       </div>
     </div>
@@ -839,7 +802,7 @@
 
 
   <!-- Javascript -->
-   
+
   <script src="config.js"></script>
   <script src="script.js"></script>
   
