@@ -1,15 +1,15 @@
 /*  CSS Custom Properties (Variables */
 
 :root {
-  --color-bg: #0A0A0A;
-  --color-bg-card: #121212;
-  --color-bg-alt: #0F0F0F;
-  --color-border: #1E1E1E;
+  --color-bg: #111318;
+  --color-bg-card: #1A1D24;
+  --color-bg-alt: #0D0F13;
+  --color-border: #2A2D35;
   --color-accent: #C9506A;
   --color-accent-dim: #A33A52;
   --color-text: #E8E0D0;
   --color-text-muted:#888070;
-  --color-text-faint:#3A3530;
+  --color-text-faint:#3E4250;
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
  
@@ -20,8 +20,8 @@
   --space-lg: 1.5rem; /* 24px */
   --space-xl: 2rem; /* 32px */
   --space-2xl: 3rem; /* 48px */
-  --space-3xl: 5rem; /* 80px */
-  --space-4xl: 8rem; /* 128px */
+  --space-3xl: 3rem; /* 80px */
+  --space-4xl: 5rem; /* 128px */
  
   /* Border Radius */
   --radius-sm: 4px;
@@ -42,7 +42,9 @@
   --nav-height: 72px;
 }
 
+
 /* Light Theme - variable overrides */
+
 [data-theme="light"] {
   --color-bg: #FAF7F2;
   --color-bg-card: #FFFFFF;
@@ -106,9 +108,9 @@ html {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-muted);
+  border: 1px solid rgba(201, 80, 106, 0.4);
+  background: rgba(201, 80, 106, 0.06);
+  color: var(--color-accent);
   cursor: pointer;
   flex-shrink: 0;
   transition: color var(--transition-base),
@@ -153,6 +155,7 @@ html {
 
 
 /* CSS Reset & Base Styles */
+
 *,
 *::before,
 *::after {
@@ -164,6 +167,7 @@ html {
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -175,6 +179,8 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  min-width: 100%;
 }
 
 ul, ol {
@@ -274,7 +280,7 @@ body.loaded .highlight::after {
 
 .section-header {
   text-align: center;
-  margin-bottom:  var(--space-3xl);
+  margin-bottom:  var(--space-2xl);
 }
 
 .section-header--left {
@@ -347,7 +353,7 @@ body.loaded .highlight::after {
 .btn-secondary {
   background-color: transparent;
   color: var(--color-text);
-  border: 2px solid var(--color-border);
+  border: 2px solid rgba(201, 80, 106, 0.45);
 }
  
 .btn-secondary:hover {
@@ -362,6 +368,7 @@ body.loaded .highlight::after {
 
 
 /* Navigation */
+
 .navbar {
   position: fixed;
   top: 0;
@@ -391,6 +398,7 @@ body.loaded .highlight::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-xl);
 }
 
 .nav-logo {
@@ -403,7 +411,7 @@ body.loaded .highlight::after {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: var(--space-2xl);
+  gap: var(--space-xl);
 }
  
 .nav-link {
@@ -486,9 +494,9 @@ body.loaded .highlight::after {
   font-weight: 500;
   letter-spacing: 0.04em;
   color: var(--color-accent);
-  border: 1px solid rgba(201, 80, 106, 0.35);
+  border: 1px solid rgba(201, 80, 106, 0.6);
   border-radius: 100px;
-  background: rgba(201, 80, 106, 0.05);
+  background: rgba(201, 80, 106, 0.1);
   white-space: nowrap;
   opacity: 0;
   transform: translateX(12px);
@@ -536,7 +544,7 @@ body.loaded .highlight::after {
 
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--nav-height));
   display: flex;
   align-items: center;
   padding-top: var(--nav-height);
@@ -558,8 +566,17 @@ body.loaded .highlight::after {
   z-index: 1;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: var(--space-4xl) var(--space-xl);
+  padding: var(--space-xl) var(--space-xl);
   width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-3xl);
+  align-items: center;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
 }
  
 .hero-eyebrow {
@@ -639,6 +656,51 @@ body.loaded .highlight::after {
   background: linear-gradient(to bottom, var(--color-text-muted), transparent);
   animation: scrollPulse 2s ease-in-out infinite;
 }
+
+.hero-photo-wrap {
+  position: relative;
+  width: 360px;
+  flex-shrink: 0;
+}
+ 
+.hero-photo {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: top;
+  border-radius: var(--radius-lg);
+  filter: grayscale(15%);
+  transition: filter var(--transition-slow);
+  display: block;
+}
+ 
+.hero-photo:hover {
+  filter: grayscale(0%);
+}
+ 
+.hero-photo-border {
+  position: absolute;
+  top: 14px;
+  left: -14px;
+  right: 14px;
+  bottom: -14px;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  opacity: 0.25;
+  z-index: -1;
+  pointer-events: none;
+}
+ 
+@media (max-width: 900px) {
+  .hero-content {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-photo-wrap {
+    width: 240px;
+    margin: 0 auto;
+  }
+}
  
  
 /* Services Section */
@@ -652,6 +714,7 @@ body.loaded .highlight::after {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-xl);
+  align-items: start;
 }
  
 .service-card {
@@ -787,7 +850,7 @@ body.loaded .highlight::after {
  
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-xl);
   align-items: start;
 }
@@ -975,9 +1038,10 @@ body.loaded .highlight::after {
  
 .writing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-xl);
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-md);
+  min-height: 200px;
 }
  
 /* Post Cards (injected by JS) */
@@ -1167,8 +1231,19 @@ body.loaded .highlight::after {
   justify-content: center;
   margin-top: var(--space-2xl);
 }
+
+.writing-cta .btn-secondary,
+.projects-cta .btn-secondary {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
  
+.writing-cta .btn-secondary:hover,
+.projects-cta .btn-secondary:hover {
+  background: rgba(201, 80, 106, 0.1);
+}
  
+
 /* About Section */
  
 .about {
@@ -1295,7 +1370,7 @@ input:focus, textarea:focus {
 }
  
 input.error, textarea.error {
-  border-color: #e05252;
+  border-color: #E05252;
 }
  
 textarea {
@@ -1305,7 +1380,7 @@ textarea {
  
 .field-error {
   font-size: 0.78rem;
-  color: #e05252;
+  color: #E05252;
   min-height: 1.2em;
 }
  
@@ -1325,13 +1400,13 @@ textarea {
 .form-feedback.success {
   background: rgba(80, 200, 120, 0.08);
   border: 1px solid rgba(80, 200, 120, 0.2);
-  color: #50c878;
+  color: #50C878;
 }
  
 .form-feedback.error {
   background: rgba(224, 82, 82, 0.08);
   border: 1px solid rgba(224, 82, 82, 0.2);
-  color: #e05252;
+  color: #E05252;
 }
  
 /* Projects CTA — "View All on GitHub" button */
@@ -1441,7 +1516,6 @@ textarea {
   line-height: 1.8;
   color: var(--color-text-muted);
   font-style: italic;
-  /* Override the default max-width on <p> elements */
   max-width: none;
 }
  
@@ -1585,7 +1659,9 @@ textarea {
   }
 }
  
+
 /* Testimonial Skeleton Loaders */
+
 .testimonial-skeleton .testimonial-card-inner {
   min-height: 200px;
   display: flex;
@@ -1712,6 +1788,35 @@ textarea {
   flex-wrap: wrap;
   gap: var(--space-md);
 }
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2xl);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+ 
+.footer-nav-link {
+  font-size: 0.825rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+ 
+.footer-nav-link:hover {
+  color: var(--color-accent);
+}
+ 
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
  
 .footer-name {
   font-family: var(--font-display);
@@ -1796,8 +1901,14 @@ html:not(.js-loaded) .reveal-children > * {
 }
 
 @keyframes scrollPulse {
-  0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
-  50%       { opacity: 1;   transform: scaleY(1); }
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleY(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 
 
@@ -1910,6 +2021,7 @@ html:not(.js-loaded) .reveal-children > * {
 
 
 /* Accessibility: Reduced Motion */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
