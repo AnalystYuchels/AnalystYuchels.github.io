@@ -89,7 +89,7 @@ window.addEventListener('load', () => {
 
 (function initTypewriter() {
 
-  const e1 = document.getElementById('typewriterText');
+  const el = document.getElementById('typewriterText');
   const cursor = document.getElementById('typewriterCursor');
   if (!e1) return;
 
