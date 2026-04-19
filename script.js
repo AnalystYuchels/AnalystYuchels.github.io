@@ -5,12 +5,10 @@
   const STORAGE_KEY = 'uu-theme';
   const html = document.documentElement;
 
-  // Determing which theme to use on load
   function getInitialTheme() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'light' || saved === 'dark') return saved;
 
-    // Check OS preference
     const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
     return prefersLight ? 'light' : 'dark';
   }
@@ -39,21 +37,16 @@
     const btn = document.getElementById('themeToggle');
     if (!btn) return;
 
-    // Set correct initial label
     updateToggleLabel(html.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
 
     btn.addEventListener('click', () => {
-      // Read current them, flip it
       const current = html.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
       const next = current === 'dark' ? 'light' : 'dark';
 
-      // Apply the new theme visually
       applyTheme(next);
 
-      // Save it so the choice persists on next visit
       localStorage.setItem(STORAGE_KEY, next);
 
-      // Update the accessible label
       updateToggleLabel(next);
 
       // Re-run the particle canvas resize so it adapts to any background color change
@@ -68,7 +61,6 @@
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
       const hasSavedPref = localStorage.getItem(STORAGE_KEY);
       if (!hasSavedPref) {
-        // No saved preference - follow OS
         const newTheme = e.matches ? 'light' : 'dark';
         applyTheme(newTheme);
         updateToggleLabel(newTheme);
@@ -76,25 +68,152 @@
     });
   });
 
-  // Apply the theme immediately (before DOM is ready)
   applyTheme(getInitialTheme());
 })();
+
 
 // Page Load
 
 document.documentElement.classList.add('js-loaded');
 
 window.addEventListener('load', () => {
-  // Short delay before the underline draws in - gives hero text time to appear first
   setTimeout(() => {
     document.body.classList.add('loaded');
   }, 600);
 
-  // Set the footer copyright year dynamically
   const yearE1 = document.getElementById('year');
   if (yearE1) {
     yearE1.textContent = new Date().getFullYear();
   }
+});
+
+(function initTypewriter() {
+
+  const e1 = document.getElementById('typewriterText');
+  const cursor = document.getElementById('typewriterCursor');
+  if (!e1) return;
+
+  let words = [];
+  try {
+    words = JSON.parse(e1.dataset.words || '[]');
+  } catch (e) {
+    words = ['build things for the web.'];
+  }
+
+  if (words.length === 0) return;
+
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        audioCtx = null;
+      }
+    }
+    return audioCtx;
+  }
+
+  function playTick() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+
+    // Create a short click sound using a brief oscillator burst
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.04);
+
+    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.06);
+  }
+
+  let wordIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  let firstComplete = false;
+
+  // Timing config (milliseconds)
+  const TYPE_SPEED = 65;
+  const DELETE_SPEED = 35;
+  const PAUSE_AFTER = 1800;
+  const PAUSE_BEFORE = 400;
+
+  function tick() {
+    const currentWord = words[wordIndex];
+
+    if (isDeleting) {
+      if (charIndex > 0) {
+        charIndex--;
+        e1.textContent = currentWord.slice(0, charIndex);
+        setTimeout(tick, DELETE_SPEED);
+      } else {
+        // finished deleting, move to next word
+        isDeleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+        setTimeout(tick, PAUSE_BEFORE);
+      }
+      return;
+    }
+
+    // Typing
+    if (charIndex < currentWord.length) {
+      charIndex++;
+      e1.textContent = currentWord.slice(0, charIndex);
+      playTick();
+
+      if (charIndex === currentWord.length) {
+        if (!firstComplete && cursor) {
+          firstComplete = true;
+          setTimeout(() => {
+            cursor.style.animation = 'none';
+            cursor.style.opacity = '0';
+          }, PAUSE_AFTER);
+        }
+
+        if (words.length > 1) {
+          setTimeout(() => {
+            isDeleting = true;
+            tick();
+          }, PAUSE_AFTER + PAUSE_BEFORE);
+        }
+        return;
+      }
+      setTimeout(tick, TYPE_SPEED);
+    } else {
+      setTimeout(tick, TYPE_SPEED);
+    }
+  }
+
+  setTimeout(tick, 1000);
+})();
+
+// Service Card Read-More Toggle
+document.querySelectorAll('.read-more-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const textE1 = btn.previousElementSibling;
+    if (!textE1) return;
+
+    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+    if (isExpanded) {
+      textE1.classList.remove('expanded');
+      btn.textContent = 'Read more';
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      textE1.classList.add('expanded');
+      btn.textContent = 'Read less';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
 });
 
 
@@ -103,7 +222,6 @@ window.addEventListener('load', () => {
 const canvas = document.getElementById('heroCanvas');
 const ctx = canvas ? canvas.getContext('2d') : null;
 
-// Only run if canvas exists and user hasn't asked for reduced motion
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 if (canvas && ctx && !prefersReducedMotion) {
@@ -112,17 +230,14 @@ if (canvas && ctx && !prefersReducedMotion) {
 
 function initParticles() {
 
-  // Resize the canvas to fill its parent (the hero section)
   function resize() {
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
   }
 
   resize();
-  // Re-size on window resize (e.g. rotating phone from portrait to landscape)
   window.addEventListener('resize', resize);
 
-  // Configuration
   const PARTICLE_COUNT = 55; // Number of dots
   const MAX_DIST = 130; // Max px distance to draw connecting lines
   const SPEED = 0.35; // How fast particles drift
@@ -131,38 +246,31 @@ function initParticles() {
 
   // Create the particle array
   const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
-    x: Math.random() * canvas.width, // Random starting X
-    y: Math.random() * canvas.height, // Random starting Y
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
 
     // Velocity: random direction, bounded by SPEED
     vx: (Math.random() - 0.5) * SPEED,
     vy: (Math.random() - 0.5) * SPEED,
   }));
 
-  // The animation loop - called ~60 times per second
   function animate() {
-    // Clear the canvas each frame so previous positions don't linger
     ctx.clearRect(0,0, canvas.width, canvas.height);
 
-    // Update and draw each particle
     for (const p of particles) {
 
-      // Move the particle
       p.x += p.vx;
       p.y += p.vy;
 
-      // Bounce off edges when a particle reaches the wall, flip its velocity to reverse direction
       if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
       if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
  
-      // Draw the dot
       ctx.beginPath();
       ctx.arc(p.x, p.y, DOT_RADIUS, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${COLOR}, 0.5)`;
       ctx.fill();
     }
 
-    // Draw connecting lines between nearby particles
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;  // Horizontal distance
@@ -171,8 +279,6 @@ function initParticles() {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < MAX_DIST) {
-          // The closer the particles, the more opaque the line
-          // When dist = 0, opacity = 0.15. When dist = MAX_DIST, opacity = 0.
           const opacity = (1 - dist / MAX_DIST) * 0.15;
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
@@ -184,11 +290,8 @@ function initParticles() {
       }
     }
  
-    // Schedule the next frame
     requestAnimationFrame(animate);
-  }
- 
-  // Kick off the loop
+  } 
   animate();
 }
  
@@ -196,50 +299,37 @@ function initParticles() {
 // Sticky Nav - Scroll-Triggered Background
 
 const navbar = document.getElementById('navbar');
-const cvPill = document.getElementById('navCvPill');
-// heroSection height tells us exactly when the user has left the hero
 const heroSection = document.getElementById('home');
  
 function handleNavScroll() {
   if (!navbar) return;
 
-  // Frosted glass background
   navbar.classList.toggle('scrolled', window.scrollY > 80);
-
-  // Download CV pill visibility
-  if (cvPill && heroSection) {
-    const heroBottom = heroSection.getBoundingClientRect().bottom;
-    cvPill.classList.toggle('nav-cv-pill--visible', heroBottom < 72);
-  }
 }
 
-// Listen for scroll events
 window.addEventListener('scroll', handleNavScroll, { passive: true });
 handleNavScroll();
 
 
 // Active Nav Link - Highlights current section
+
 const navLinks = document.querySelectorAll('.nav-link');
 
-// The sections we want to track
 const sections = document.querySelectorAll('section[id]');
 
-// IntersectionObserver watches when elements enter/leave the viewport
 const sectionObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        // This section is now visible — find and activate its nav link
+
         const id = entry.target.id;
         navLinks.forEach((link) => {
-          // Check if this link's href ends with #sectionId
           link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
         });
       }
     });
   },
   {
-    // rootMargin: shrinks the "visible" area — we count a section as active 
     rootMargin: '-40% 0px -40% 0px',
   }
 );
@@ -255,7 +345,6 @@ const navLinksEl = document.getElementById('nav-links');
 function openMenu() {
   navLinksEl.classList.add('open');
   hamburger.setAttribute('aria-expanded', 'true');
-  // Prevent body from scrolling while menu is open
   document.body.style.overflow = 'hidden';
 }
  
@@ -267,18 +356,15 @@ function closeMenu() {
  
 if (hamburger && navLinksEl) {
   hamburger.addEventListener('click', () => {
-    // Toggle: if open → close; if closed → open
     const isOpen = navLinksEl.classList.contains('open');
     isOpen ? closeMenu() : openMenu();
   });
  
-  // Close menu when any nav link is clicked
   navLinksEl.querySelectorAll('.nav-link').forEach((link) => {
     link.addEventListener('click', closeMenu);
   });
 }
  
-// Close menu on Escape key — keyboard accessibility
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeMenu();
 });
@@ -302,33 +388,28 @@ revealTargets.forEach((selector) => {
   });
 });
 
-// Staggered children — grid containers whose children animate in sequence
 document.querySelectorAll('.services-grid, .projects-grid').forEach((el) => {
   el.classList.add('reveal-children');
-  // Remove individual reveal from direct children since the parent handles it
   el.querySelectorAll(':scope > .reveal').forEach((child) => {
     child.classList.remove('reveal');
   });
 });
  
-// The observer that triggers the animations
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-        // Once revealed, stop observing — no need to toggle it again
         revealObserver.unobserve(entry.target);
       }
     });
   },
   {
-    threshold: 0.1,  // Trigger when 10% of the element is visible
-    rootMargin: '0px 0px -50px 0px',  // Slightly before the element hits the viewport bottom
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px',
   }
 );
  
-// Observe everything marked with .reveal or .reveal-children
 document.querySelectorAll('.reveal, .reveal-children').forEach((el) => {
   revealObserver.observe(el);
 });
@@ -342,13 +423,10 @@ const formFeedback = document.getElementById('formFeedback');
  
 if (contactForm) {
   contactForm.addEventListener('submit', async (e) => {
-    // Prevent the default browser behaviour (page reload / form GET request)
     e.preventDefault();
 
-    // Client-side validation
     let isValid = true;
 
-    // Helper: show an error message below a field
     function showError(fieldId, message) {
       const field = document.getElementById(fieldId);
       const errorEl = field?.nextElementSibling;
@@ -357,7 +435,6 @@ if (contactForm) {
       isValid = false;
     }
  
-    // Helper: clear error state
     function clearError(fieldId) {
       const field = document.getElementById(fieldId);
       const errorEl = field?.nextElementSibling;
@@ -365,16 +442,13 @@ if (contactForm) {
       if (errorEl) errorEl.textContent = '';
     }
  
-    // Clear previous errors first
     ['name', 'email', 'message'].forEach(clearError);
  
-    // Validate name
     const name = document.getElementById('name')?.value.trim();
     if (!name) {
       showError('name', 'Please enter your name.');
     }
 
-    // Validate email - uses a simple regex for basic format check
     const email = document.getElementById('email')?.value.trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
@@ -383,13 +457,11 @@ if (contactForm) {
       showError('email', 'Please enter a valid email address.');
     }
  
-    // Validate message
     const message = document.getElementById('message')?.value.trim();
     if (!message) {
       showError('message', 'Please write a message.');
     }
  
-    // Stop here if any field is invalid
     if (!isValid) return;
 
     // Submit to Formspree
@@ -403,20 +475,16 @@ if (contactForm) {
     if (btnIcon) btnIcon.hidden = true;
  
     try {
-      // FormData serializes all form fields into the right format for HTTP
       const data = new FormData(contactForm);
  
-      // fetch() makes an HTTP request. We await the response.
       const response = await fetch(contactForm.action, {
         method: 'POST',
         body: data,
         headers: { 'Accept': 'application/json' },
 
-        // Accept: application/json tells Formspree to return JSON instead of redirecting. It is needed for AJAX submissions.
       });
  
       if (response.ok) {
-        // Success! Clear the form and show success message
         contactForm.reset();
         showFeedback('success', '✓ Message sent! I\'ll get back to you soon.');
       } else {
@@ -483,7 +551,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
     const navbarHeight = navbar ? navbar.offsetHeight : 0;
 
-    // getBoundClientRect gives position relative to viewport
     const targetTop = targetEl.getBoundingClientRect().top + window.scrollY - navbarHeight;
  
     window.scrollTo({ top: targetTop, behavior: 'smooth' });
@@ -527,11 +594,9 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     return;
   }
 
-  // Carousel state
   let currentPage = 0;
   let totalCards = 0;
 
-  // Helper: cards per page based on viewport
   function cardsPerPage() {
     if (window.innerWidth > 900) return 3;
     if (window.innerWidth > 600) return 2;
@@ -542,7 +607,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     return Math.max(1, Math.ceil(totalCards / cardsPerPage()));
   }
 
-  // Helper: build dots
   function buildDots() {
     dotsEl.innerHTML = '';
     for (let i = 0; i < totalPages(); i++) {
@@ -556,7 +620,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     }
   }
 
-  // Helper: slide to page
   function goTo(pageIndex) {
     if (totalCards === 0) return;
     const cpp = cardsPerPage();
@@ -576,7 +639,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     if (nextBtn) nextBtn.disabled = currentPage === pages - 1;
   }
 
-  // Helper: build one testimonial card element
   function buildCard(t) {
     const article = document.createElement('article');
     article.className = 'testimonial-card';
@@ -598,7 +660,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     const author = document.createElement('div');
     author.className = 'testimonial-author';
  
-    // Avatar: first letters of first and last name
     const initials = t.name
       .split(' ')
       .slice(0, 2)
@@ -633,7 +694,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     return article;
   }
 
-  // Helper: empty state (no approved testimonials yet)
   function showEmptyState() {
     track.innerHTML = `
       <div class="testimonials-empty">
@@ -648,7 +708,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     if (nav) nav.hidden = true;
   }
 
-  // Part 1: Fetch Approved Testimonials from Supabase
+  // Fetch Approved Testimonials from Supabase
   async function loadTestimonials() {
     try {
       const { data, error } = await db
@@ -659,7 +719,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
       if (error) throw error;
  
-      // Remove skeleton cards
       track.innerHTML = '';
  
       if (!data || data.length === 0) {
@@ -676,14 +735,12 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       buildDots();
       goTo(0);
       startAuto();
- 
     } catch (err) {
       console.warn('Could not load testimonials:', err.message);
       showEmptyState();
     }
   }
 
-  // Auto-advance
   let autoTimer = null;
  
   function startAuto() {
@@ -700,7 +757,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     section.addEventListener('mouseleave', () => { if (totalCards > 0) startAuto(); });
   }
 
-  // Arrow + keyboard navigation
   if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentPage - 1));
   if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentPage + 1));
  
@@ -730,12 +786,13 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     }, 200);
   });
 
-  // Part 2: Submit New Testimonial to Supabase
+
+  // Submit New Testimonial to Supabase
+
   if (form) {
     form.addEventListener('submit', async e => {
       e.preventDefault();
 
-      // Validation
       let valid = true;
  
       function fieldError(id, msg) {
@@ -914,8 +971,8 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     readMore.className = 'post-card-read';
     readMore.innerHTML = `Read article
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-        <line x1="7" y1="17" x2="17" y2="7"/>
-        <polyline points="7 7 17 7 17 17"/>
+        <line x1="7" y1="17" x2="17" y2="7">
+        <polyline points="7 7 17 7 17 17">
       </svg>`;
  
     body.appendChild(date);
@@ -933,8 +990,8 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       <div class="writing-fallback">
         <div class="writing-fallback-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            <path d="M12 20h9">
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
           </svg>
         </div>
         <h3>Writing on Hashnode</h3>
@@ -942,15 +999,14 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         <a href="${blogUrl}" class="btn btn-primary" target="_blank" rel="noopener noreferrer" style="margin-top:0.5rem;">
           Visit my Blog
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6">
+            <polyline points="15 3 21 3 21 9">
+            <line x1="10" y1="14" x2="21" y2="3">
           </svg>
         </a>
       </div>`;
   }
  
-  // Check username hasn'tbeen left as the placeholder
   if (HASHNODE_USERNAME === 'your-hashnode-username') {
     console.warn(
       'Writing section: Hashnode username not set.\n' +
@@ -999,10 +1055,28 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
     // Show the "Read All Articles" CTA button
     if (ctaWrap) ctaWrap.hidden = false;
- 
   } catch (err) {
     console.warn('Writing section: could not fetch posts.', err.message);
     showFallback();
   }
- 
 })();
+
+document.querySelectorAll('.read-more-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const wrap = btn.closest('.service-text-wrap');
+    const text = wrap?.querySelector('.service-text');
+    const expanded = btn.getAttribute('aria-expanded') ==='true';
+
+    if (!text) return;
+
+    if (expanded) {
+      text.classList.remove('expanded');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.textContent = 'Read more';
+    } else {
+      text.classList.add('expanded');
+      btn.setAttribute('aria-expanded', 'true');
+      btn.textContent = 'Show less';
+    }
+  });
+});
