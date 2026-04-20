@@ -97,43 +97,13 @@ window.addEventListener('load', () => {
   try {
     words = JSON.parse(el.dataset.words || '[]');
   } catch (e) {
-    words = ['build things for the web.'];
+    words = ['I build things for the web.'];
   }
 
   if (words.length === 0) return;
 
-  let audioCtx = null;
-  function getAudioCtx() {
-    if (!audioCtx) {
-      try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      } catch (e) {
-        audioCtx = null;
-      }
-    }
-    return audioCtx;
-  }
-
   function playTick() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-
-    // Create a short click sound using a brief oscillator burst
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(800, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.04);
-
-    gain.gain.setValueAtTime(0.04, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
-
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.06);
+    // silent - no sound
   }
 
   let wordIndex = 0;
@@ -171,20 +141,15 @@ window.addEventListener('load', () => {
       playTick();
 
       if (charIndex === currentWord.length) {
-        if (!firstComplete && cursor) {
-          firstComplete = true;
-          setTimeout(() => {
-            cursor.style.animation = 'none';
+        setTimeout(() => {
+          if (cursor) {
+            cursor.style.transition = 'opacity 0.5s ease';
             cursor.style.opacity = '0';
-          }, PAUSE_AFTER);
-        }
-
-        if (words.length > 1) {
-          setTimeout(() => {
-            isDeleting = true;
-            tick();
-          }, PAUSE_AFTER + PAUSE_BEFORE);
-        }
+            setTimeout(() => {
+              cursor.style.display = 'none'
+            }, 500);
+          }
+        }, 900);
         return;
       }
       setTimeout(tick, TYPE_SPEED);
@@ -195,6 +160,7 @@ window.addEventListener('load', () => {
 
   setTimeout(tick, 1000);
 })();
+
 
 // Service Card Read-More Toggle
 document.querySelectorAll('.read-more-btn').forEach(btn => {
@@ -1046,11 +1012,20 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     grid.innerHTML = '';
     edges.forEach(({ node: post }) => {
       const card = buildPostCard(post);
+      card.classList.remove('reveal');
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      card.style.transitionDelay = `${index * 0.1}s`;
       grid.appendChild(card);
-      // Trigger scroll-reveal on dynamically added cards
-      if (typeof revealObserver !== 'undefined') {
-        revealObserver.observe(card);
-      }
+
+      // Trigger animation on next frame so transition fires
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        });
+      });
     });
  
     // Show the "Read All Articles" CTA button
