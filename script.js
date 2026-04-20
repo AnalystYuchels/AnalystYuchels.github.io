@@ -91,11 +91,11 @@ window.addEventListener('load', () => {
 
   const el = document.getElementById('typewriterText');
   const cursor = document.getElementById('typewriterCursor');
-  if (!e1) return;
+  if (!el) return;
 
   let words = [];
   try {
-    words = JSON.parse(e1.dataset.words || '[]');
+    words = JSON.parse(el.dataset.words || '[]');
   } catch (e) {
     words = ['build things for the web.'];
   }
@@ -153,7 +153,7 @@ window.addEventListener('load', () => {
     if (isDeleting) {
       if (charIndex > 0) {
         charIndex--;
-        e1.textContent = currentWord.slice(0, charIndex);
+        el.textContent = currentWord.slice(0, charIndex);
         setTimeout(tick, DELETE_SPEED);
       } else {
         // finished deleting, move to next word
@@ -167,7 +167,7 @@ window.addEventListener('load', () => {
     // Typing
     if (charIndex < currentWord.length) {
       charIndex++;
-      e1.textContent = currentWord.slice(0, charIndex);
+      el.textContent = currentWord.slice(0, charIndex);
       playTick();
 
       if (charIndex === currentWord.length) {
@@ -971,8 +971,8 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     readMore.className = 'post-card-read';
     readMore.innerHTML = `Read article
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-        <line x1="7" y1="17" x2="17" y2="7">
-        <polyline points="7 7 17 7 17 17">
+        <line x1="7" y1="17" x2="17" y2="7"/>
+        <polyline points="7 7 17 7 17 17"/>
       </svg>`;
  
     body.appendChild(date);
@@ -990,8 +990,8 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       <div class="writing-fallback">
         <div class="writing-fallback-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-            <path d="M12 20h9">
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
           </svg>
         </div>
         <h3>Writing on Hashnode</h3>
@@ -999,9 +999,9 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         <a href="${blogUrl}" class="btn btn-primary" target="_blank" rel="noopener noreferrer" style="margin-top:0.5rem;">
           Visit my Blog
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6">
-            <polyline points="15 3 21 3 21 9">
-            <line x1="10" y1="14" x2="21" y2="3">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
           </svg>
         </a>
       </div>`;

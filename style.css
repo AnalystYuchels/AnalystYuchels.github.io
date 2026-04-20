@@ -465,7 +465,7 @@ body.loaded .highlight::after {
   display: block;
 }
 
-.theme-toggle--sun {
+.theme-icon--sun {
   display: none;
 }
 
