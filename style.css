@@ -717,6 +717,7 @@ body.loaded .highlight::after {
   display: block;
   filter: none;
   transition: filter var(--transition-slow);
+  max-height: 480px;
 }
 
 .photo-corner {
@@ -941,7 +942,7 @@ body.loaded .highlight::after {
 
 .tech-categories {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-xl);
 }
 
@@ -1044,6 +1045,8 @@ body.loaded .highlight::after {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transition: transform var(--transition-slow),
     box-shadow var(--transition-slow),
     border-color var(--transition-slow);
@@ -1115,6 +1118,9 @@ body.loaded .highlight::after {
  
 .project-body {
   padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
  
 .project-tags {
@@ -1146,6 +1152,7 @@ body.loaded .highlight::after {
   line-height: 1.7;
   margin-bottom: var(--space-lg);
   max-width: none;
+  flex: 1;
 }
  
 .project-links {
@@ -1232,6 +1239,13 @@ body.loaded .highlight::after {
   margin-bottom: var(--space-md);
   min-height: 240px;
   align-items: start;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 0;
+  width: 100%;
 }
  
 /* Post Cards (injected by JS) */
@@ -1501,7 +1515,7 @@ body.loaded .highlight::after {
 .testimonial-card {
   flex: 0 0 33.333%;
   box-sizing: border-box;
-  padding: 0 calc(var(--space-md) / 2);
+  padding: 0 var(--space-md);
 }
  
 .testimonial-card-inner {
@@ -2117,13 +2131,15 @@ html:not(.js-loaded) .reveal-children > * {
 
   .hero-right {
     justify-content: center;
-    max-width: 360px;
+    max-width: 380px;
     margin: 0 auto;
   }
 
   .hero-photo-wrap {
     flex: unset;
     width: 100%;
+    max-height: 360px;
+    overflow: hidden;
   }
 
    .about-container {
@@ -2230,6 +2246,14 @@ html:not(.js-loaded) .reveal-children > * {
   .container {
     padding-left: var(--space-lg);
     padding-right: var(--space-lg);
+  }
+
+  .hero-right {
+    max-width: 260px;
+  }
+
+  .hero-photo-wrap {
+    max-height: 280px;
   }
  
   .hero-cta {
