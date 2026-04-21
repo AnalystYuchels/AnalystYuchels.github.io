@@ -959,53 +959,40 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     grid.innerHTML = '';
   }
  
-  if (HASHNODE_USERNAME === 'your-hashnode-username') {
-    console.warn(
-      'Writing section: Hashnode username not set.\n' +
-      "Open script.js, find HASHNODE_USERNAME, and replace 'your-hashnode-username'\n" +
-      'with your real Hashnode username (the part after hashnode.com/@).'
-    );
-    showFallback();
-    return;
-  }
- 
-  // Fetch posts from Hashnode's GraphQL API
   try {
-    const response = await fetch('https://gql.hashnode.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        query: QUERY,
-        variables: {
-          host:  `${HASHNODE_USERNAME}.hashnode.dev`,
-          first: POSTS_TO_SHOW,
-        },
-      }),
-    });
+    const response = await fetch(rssUrl);
+    if (!response.ok) throw new Error(`RSS fetch failed: ${response.status}`);
  
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const xmlText = await response.text();
  
-    const json  = await response.json();
-    const edges = json?.data?.publication?.posts?.edges;
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
  
-    if (!edges || edges.length === 0) {
+    // Check for parse errors
+    const parseError = xmlDoc.querySelector('parsererror');
+    if (parseError) throw new Error('RSS XML parse error');
+ 
+    const items = Array.from(xmlDoc.querySelectorAll('item')).slice(0, POSTS_TO_SHOW);
+ 
+    if (items.length === 0) {
       showFallback();
       return;
     }
  
+    const posts = items.map(item => ({
+      title : item.querySelector('title')?.textContent || 'Untitled',
+      url : item.querySelector('link')?.textContent?.trim() || blogUrl,
+      publishedAt : item.querySelector('pubDate')?.textContent || '',
+      brief : item.querySelector('description')?.textContent?.replace(/<[^>]+>/g, '').slice(0, 200).trim() || '',
+      coverImage : item.querySelector('enclosure')?.getAttribute('url') ||
+        item.querySelector('media\\:content, content')?.getAttribute('url') || null,
+    }));
+ 
+    // Clear skeleton loaders and inject real cards
     grid.innerHTML = '';
-    edges.forEach(({ node: post }) => {
-      const card = buildPostCard(post);
-      card.classList.remove('reveal');
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(20px)';
-      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      card.style.transitionDelay = `${index * 0.1}s`;
+    posts.forEach((post, index) => {
+      const card = buildPostCard(post, index);
       grid.appendChild(card);
-
-      // Trigger animation on next frame so transition fires
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           card.style.opacity = '1';
@@ -1014,12 +1001,11 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       });
     });
  
-    // Show the "Read All Articles" CTA button
-    if (ctaWrap) ctaWrap.hidden = false;
   } catch (err) {
-    console.warn('Writing section: could not fetch posts.', err.message);
+    console.warn('Writing section: could not load RSS feed.', err.message);
     showFallback();
   }
+ 
 })();
 
 document.querySelectorAll('.read-more-btn').forEach(btn => {
