@@ -954,7 +954,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
  
-    if (doc.querySelector('parsererror')) throw new Error('RSS parse error');
+    if (doc.querySelector('parsererror')) throw new Error('RSS XML could not be parsed');
  
     const items = Array.from(doc.querySelectorAll('item')).slice(0, POSTS_TO_SHOW);
     if (items.length === 0) {
@@ -977,7 +977,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   } catch (err) {
     showDebug(`Error: ${err.message}`);
     console.warn('Blog feed error:', err.message);
-    grid.innerHTML = '';
   }
  
 })();
