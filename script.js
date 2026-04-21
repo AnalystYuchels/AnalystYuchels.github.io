@@ -956,25 +956,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
   // Fallback shown when fetch fails or username not set
   function showFallback() {
-    grid.innerHTML = `
-      <div class="writing-fallback">
-        <div class="writing-fallback-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
-        </div>
-        <h3>Writing on Hashnode</h3>
-        <p>I write about web development, technical documentation, and lessons from building real projects.</p>
-        <a href="${blogUrl}" class="btn btn-primary" target="_blank" rel="noopener noreferrer" style="margin-top:0.5rem;">
-          Visit my Blog
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
-        </a>
-      </div>`;
+    grid.innerHTML = '';
   }
  
   if (HASHNODE_USERNAME === 'your-hashnode-username') {
