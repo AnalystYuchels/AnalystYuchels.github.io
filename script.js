@@ -905,10 +905,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
   function buildPostCard(post, index) {
     const card = document.createElement('a');
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    card.style.transitionDelay = `${(index || 0) * 0.12}s`;
+    
     card.href = post.url;
     card.target = '_blank';
     card.rel = 'noopener noreferrer';
