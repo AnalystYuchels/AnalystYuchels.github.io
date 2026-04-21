@@ -1982,11 +1982,12 @@ textarea {
 
 .footer-col-heading {
   font-family: var(--font-body);
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
 }
 
 .footer-nav-link {
