@@ -937,8 +937,14 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
     return card;
   }
+
+  function showDebug(msg) {
+    grid.innerHTML = `<p style="color:#C9506A;font-size:0.85rem;grid-column:1/-1;padding:1rem 0;">${msg}</p>`;
+  }
  
   try {
+    showDebug('Fetching RSS feed...');
+
     const response = await fetch(rssUrl);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
  
