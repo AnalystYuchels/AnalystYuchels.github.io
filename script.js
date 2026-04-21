@@ -912,7 +912,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     card.href = post.url;
     card.target = '_blank';
     card.rel = 'noopener noreferrer';
-    card.className = 'post-card reveal';
+    card.className = 'post-card';
     card.setAttribute('aria-label', `Read: ${post.title} (opens in new tab)`);
  
     // Cover image — only if the post has one
@@ -920,7 +920,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       const wrap = document.createElement('div');
       wrap.className = 'post-card-cover-wrap';
       const img = document.createElement('img');
-      img.src = post.coverImage.url;
+      img.src = post.coverImage;
       img.alt = '';
       img.className = 'post-card-cover';
       img.loading = 'lazy';
