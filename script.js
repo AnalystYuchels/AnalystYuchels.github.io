@@ -946,16 +946,21 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     showDebug('Fetching RSS feed...');
 
     const response = await fetch(rssUrl);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status} - feed request failed`);
  
     const xml = await response.text();
+    showDebug('Feed received, parsing XML...');
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
  
     if (doc.querySelector('parsererror')) throw new Error('RSS parse error');
  
     const items = Array.from(doc.querySelectorAll('item')).slice(0, POSTS_TO_SHOW);
-    if (items.length === 0) { grid.innerHTML = ''; return; }
+    if (items.length === 0) {
+      showDebug('RSS feed loaded but contains 0 posts - publish an article on Hashnode first.'); 
+      return;
+    }
  
     const posts = items.map(item => ({
       title : item.querySelector('title')?.textContent?.trim() || 'Untitled',
@@ -970,6 +975,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     posts.forEach(post => grid.appendChild(buildPostCard(post)));
  
   } catch (err) {
+    showDebug(`Error: ${err.message}`);
     console.warn('Blog feed error:', err.message);
     grid.innerHTML = '';
   }
