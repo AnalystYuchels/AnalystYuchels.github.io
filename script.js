@@ -102,34 +102,35 @@ window.addEventListener('load', () => {
 
   if (words.length === 0) return;
 
-  function playTick() {
-    // silent - no sound
-  }
+  const TYPE_SPEED = 70;
+  const DELETE_SPEED = 30;
+  const PAUSE_END = 1600;
+  const PAUSE_START = 350;
 
   let wordIndex = 0;
   let charIndex = 0;
   let isDeleting = false;
-  let firstComplete = false;
 
-  // Timing config (milliseconds)
-  const TYPE_SPEED = 65;
-  const DELETE_SPEED = 35;
-  const PAUSE_AFTER = 1800;
-  const PAUSE_BEFORE = 400;
+  let totalPhrases = words.length + 1;
+
+  let phraseCount = 0;
 
   function tick() {
-    const currentWord = words[wordIndex];
+    const isFinalPass = (phraseCount === words.length);
+    const currentWord = isFinalPass ? words[0] : words[wordIndex];
 
     if (isDeleting) {
-      if (charIndex > 0) {
-        charIndex--;
-        el.textContent = currentWord.slice(0, charIndex);
-        setTimeout(tick, DELETE_SPEED);
-      } else {
-        // finished deleting, move to next word
+      charIndex--;
+      el.textContent = currentWord.slice(0, charIndex);
+
+      if (charIndex === 0) {
         isDeleting = false;
-        wordIndex = (wordIndex + 1) % words.length;
-        setTimeout(tick, PAUSE_BEFORE);
+        if (!isFinalPass) {
+          wordIndex = (wordIndex + 1) % words.length;
+        }
+        setTimeout(tick, PAUSE_START);
+      } else {
+        setTimeout(tick, DELETE_SPEED);
       }
       return;
     }
@@ -138,27 +139,30 @@ window.addEventListener('load', () => {
     if (charIndex < currentWord.length) {
       charIndex++;
       el.textContent = currentWord.slice(0, charIndex);
-      playTick();
-
-      if (charIndex === currentWord.length) {
-        setTimeout(() => {
-          if (cursor) {
-            cursor.style.transition = 'opacity 0.5s ease';
-            cursor.style.opacity = '0';
-            setTimeout(() => {
-              cursor.style.display = 'none'
-            }, 500);
-          }
-        }, 900);
-        return;
-      }
       setTimeout(tick, TYPE_SPEED);
     } else {
-      setTimeout(tick, TYPE_SPEED);
+      phraseCount++;
+
+      if (isFinalPass) {
+        setTimeout(() => {
+          if (cursor) {
+            cursor.style.transition = 'opacity 0.6s ease';
+            cursor.style.opacity = '0';
+            setTimeout(() => {
+              cursor.style.display = 'none';
+            }, 600);
+          }
+        }, 1000);
+        return;
+      }
+      setTimeout(() => {
+        isDeleting = true;
+        tick();
+      }, PAUSE_END);
     }
   }
 
-  setTimeout(tick, 1000);
+  setTimeout(tick, 1200);
 })();
 
 
@@ -204,11 +208,11 @@ function initParticles() {
   resize();
   window.addEventListener('resize', resize);
 
-  const PARTICLE_COUNT = 55; // Number of dots
-  const MAX_DIST = 130; // Max px distance to draw connecting lines
-  const SPEED = 0.35; // How fast particles drift
-  const DOT_RADIUS = 1.5; // Dot size in px
-  const COLOR = '201, 80, 106'; // RGB of our rose-gold accent color
+  const PARTICLE_COUNT = 55;
+  const MAX_DIST = 130;
+  const SPEED = 0.35; 
+  const DOT_RADIUS = 1.5;
+  const COLOR = '201, 80, 106';
 
   // Create the particle array
   const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
@@ -710,7 +714,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   let autoTimer = null;
  
   function startAuto() {
-    if (totalCards <= cardsPerPage()) return; // No point if all fit on one page
+    if (totalCards <= cardsPerPage()) return;
     autoTimer = setInterval(() => goTo((currentPage + 1) % totalPages()), 6000);
   }
  
