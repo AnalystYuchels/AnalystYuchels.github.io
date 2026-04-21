@@ -859,7 +859,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 })();
 
 
-// Writing Section - Hashnode API Fetch
+// Writing Section - Hashnode RSS Feed
 
 (async function initWritingSection() {
   const HASHNODE_USERNAME = 'analystyuchels';
@@ -878,41 +878,26 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   if (ctaLink) ctaLink.href = blogUrl;
   if (ctaWrap) ctaWrap.hidden = false;
  
-  const QUERY = `
-    query GetRecentPosts($host: String!, $first: Int!) {
-      publication(host: $host) {
-        posts(first: $first) {
-          edges {
-            node {
-              title
-              brief
-              publishedAt
-              url
-              coverImage { url }
-            }
-          }
-        }
-      }
+  function formatDate(dateString) {
+    try {
+      return new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(new Date(dateString));
+    } catch (e) {
+      return '';
     }
-  `;
- 
-  // Format ISO date string → "17 April 2026"
-  function formatDate(isoString) {
-    return new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric', month: 'long', year: 'numeric',
-    }).format(new Date(isoString));
   }
  
-  function buildPostCard(post, index) {
+  function buildPostCard(post) {
     const card = document.createElement('a');
-    
     card.href = post.url;
     card.target = '_blank';
     card.rel = 'noopener noreferrer';
     card.className = 'post-card';
     card.setAttribute('aria-label', `Read: ${post.title} (opens in new tab)`);
  
-    // Cover image — only if the post has one
     if (post.coverImage) {
       const wrap = document.createElement('div');
       wrap.className = 'post-card-cover-wrap';
@@ -925,7 +910,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       card.appendChild(wrap);
     }
  
-    // Card body
     const body = document.createElement('div');
     body.className = 'post-card-body';
  
@@ -939,15 +923,11 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
     const excerpt = document.createElement('p');
     excerpt.className = 'post-card-excerpt';
-    excerpt.textContent = post.brief || '';
+    excerpt.textContent = post.brief;
  
     const readMore = document.createElement('span');
     readMore.className = 'post-card-read';
-    readMore.innerHTML = `Read article
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-        <line x1="7" y1="17" x2="17" y2="7"/>
-        <polyline points="7 7 17 7 17 17"/>
-      </svg>`;
+    readMore.innerHTML = 'Read article <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';
  
     body.appendChild(date);
     body.appendChild(title);
@@ -958,56 +938,34 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     return card;
   }
  
-  // Fallback shown when fetch fails or username not set
-  function showFallback() {
-    grid.innerHTML = '';
-  }
- 
   try {
     const response = await fetch(rssUrl);
-    if (!response.ok) throw new Error(`RSS fetch failed: ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
  
-    const xmlText = await response.text();
- 
+    const xml = await response.text();
     const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+    const doc = parser.parseFromString(xml, 'application/xml');
  
-    // Check for parse errors
-    const parseError = xmlDoc.querySelector('parsererror');
-    if (parseError) throw new Error('RSS XML parse error');
+    if (doc.querySelector('parsererror')) throw new Error('RSS parse error');
  
-    const items = Array.from(xmlDoc.querySelectorAll('item')).slice(0, POSTS_TO_SHOW);
- 
-    if (items.length === 0) {
-      showFallback();
-      return;
-    }
+    const items = Array.from(doc.querySelectorAll('item')).slice(0, POSTS_TO_SHOW);
+    if (items.length === 0) { grid.innerHTML = ''; return; }
  
     const posts = items.map(item => ({
-      title : item.querySelector('title')?.textContent || 'Untitled',
+      title : item.querySelector('title')?.textContent?.trim() || 'Untitled',
       url : item.querySelector('link')?.textContent?.trim() || blogUrl,
-      publishedAt : item.querySelector('pubDate')?.textContent || '',
-      brief : item.querySelector('description')?.textContent?.replace(/<[^>]+>/g, '').slice(0, 200).trim() || '',
-      coverImage : item.querySelector('enclosure')?.getAttribute('url') ||
-        item.querySelector('media\\:content, content')?.getAttribute('url') || null,
+      publishedAt: item.querySelector('pubDate')?.textContent?.trim() || '',
+      brief : (item.querySelector('description')?.textContent || '')
+        .replace(/<[^>]+>/g, '').trim().slice(0, 180),
+      coverImage : item.querySelector('enclosure')?.getAttribute('url') || null,
     }));
  
-    // Clear skeleton loaders and inject real cards
     grid.innerHTML = '';
-    posts.forEach((post, index) => {
-      const card = buildPostCard(post, index);
-      grid.appendChild(card);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          card.style.opacity = '1';
-          card.style.transform = 'translateY(0)';
-        });
-      });
-    });
+    posts.forEach(post => grid.appendChild(buildPostCard(post)));
  
   } catch (err) {
-    console.warn('Writing section: could not load RSS feed.', err.message);
-    showFallback();
+    console.warn('Blog feed error:', err.message);
+    grid.innerHTML = '';
   }
  
 })();
