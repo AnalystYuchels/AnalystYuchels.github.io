@@ -873,7 +873,10 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   if (!grid) return;
  
   const blogUrl = `https://${HASHNODE_USERNAME}.hashnode.dev`;
+  const rssUrl = `${blogUrl}/rss.xml`;
+
   if (ctaLink) ctaLink.href = blogUrl;
+  if (ctaWrap) ctaWrap.hidden = false;
  
   const QUERY = `
     query GetRecentPosts($host: String!, $first: Int!) {
@@ -900,8 +903,12 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     }).format(new Date(isoString));
   }
  
-  function buildPostCard(post) {
+  function buildPostCard(post, index) {
     const card = document.createElement('a');
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    card.style.transitionDelay = `${(index || 0) * 0.12}s`;
     card.href = post.url;
     card.target = '_blank';
     card.rel = 'noopener noreferrer';
@@ -909,7 +916,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     card.setAttribute('aria-label', `Read: ${post.title} (opens in new tab)`);
  
     // Cover image — only if the post has one
-    if (post.coverImage?.url) {
+    if (post.coverImage) {
       const wrap = document.createElement('div');
       wrap.className = 'post-card-cover-wrap';
       const img = document.createElement('img');
