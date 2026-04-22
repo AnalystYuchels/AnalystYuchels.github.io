@@ -623,8 +623,20 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     body.className = 'testimonial-body';
     const quote = document.createElement('p');
     quote.className = 'testimonial-text';
-    quote.textContent = t.message; // textContent = safe — no HTML injection
+    quote.textContent = t.message;
     body.appendChild(quote);
+
+    // "Read more" toggle — only shown when text is long enough to be clamped
+    const readBtn = document.createElement('button');
+    readBtn.className = 'testimonial-read-btn';
+    readBtn.textContent = 'Read more';
+    readBtn.setAttribute('aria-expanded', 'false');
+    readBtn.addEventListener('click', () => {
+      const expanded = quote.classList.toggle('expanded');
+      readBtn.textContent = expanded ? 'Show less' : 'Read more';
+      readBtn.setAttribute('aria-expanded', String(expanded));
+    });
+    body.appendChild(readBtn);
  
     // Author row
     const author = document.createElement('div');

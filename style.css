@@ -1553,7 +1553,7 @@ body.loaded .highlight::after {
   font-size: 6rem;
   line-height: 1;
   color: var(--color-accent);
-  opacity: 0.1;
+  opacity: 0.35;
   pointer-events: none;
   user-select: none;
 }
@@ -1586,6 +1586,12 @@ body.loaded .highlight::after {
   color: var(--color-text-muted);
   font-style: italic;
   max-width: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: none;
 }
  
 .testimonial-author {
