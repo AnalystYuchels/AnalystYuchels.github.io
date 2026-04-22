@@ -2304,3 +2304,10 @@ html:not(.js-loaded) .reveal-children > * {
     scroll-behavior: auto;
   }
 }
+
+.testimonial-text.expanded {
+  display: block;
+  overflow: visible;
+  line-clamp: unset;
+  -webkit-line-clamp: unset;
+}

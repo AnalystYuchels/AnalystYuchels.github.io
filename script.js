@@ -631,12 +631,19 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     readBtn.className = 'testimonial-read-btn';
     readBtn.textContent = 'Read more';
     readBtn.setAttribute('aria-expanded', 'false');
+    readBtn.style.display = 'none';
     readBtn.addEventListener('click', () => {
       const expanded = quote.classList.toggle('expanded');
       readBtn.textContent = expanded ? 'Show less' : 'Read more';
       readBtn.setAttribute('aria-expanded', String(expanded));
     });
     body.appendChild(readBtn);
+
+    requestAnimationFrame(() => {
+      if (quote.scrollHeight > quote.clientHeight + 2) {
+        readBtn.style.display = 'inline-block';
+      }
+    });
  
     // Author row
     const author = document.createElement('div');
