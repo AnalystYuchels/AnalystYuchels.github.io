@@ -2174,6 +2174,14 @@ html:not(.js-loaded) .reveal-children > * {
 }
  
 @media (max-width: 768px) {
+  .hero {
+    min-height: 100svh;
+  }
+
+  .hamburger {
+    order: -1;
+  }
+
   .nav-logo {
     flex: 1;
   }
@@ -2236,10 +2244,6 @@ html:not(.js-loaded) .reveal-children > * {
   .footer-bottom-bar {
     flex-direction: column;
     text-align: center;
-  }
-
-  .scroll-indicator {
-    display: none;
   }
 
   .testimonial-card {
