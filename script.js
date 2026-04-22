@@ -862,8 +862,8 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 // Writing Section - Hashnode RSS Feed
 
 (async function initWritingSection() {
-  const HASHNODE_USERNAME = 'analystyuchels';
  
+  const HASHNODE_USERNAME = 'analystyuchels';
   const POSTS_TO_SHOW = 3;
  
   const grid = document.getElementById('writingGrid');
@@ -874,20 +874,18 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
  
   const blogUrl = `https://${HASHNODE_USERNAME}.hashnode.dev`;
   const rssUrl = `${blogUrl}/rss.xml`;
-
+ 
   if (ctaLink) ctaLink.href = blogUrl;
   if (ctaWrap) ctaWrap.hidden = false;
  
-  function formatDate(dateString) {
+  function formatDate(str) {
     try {
       return new Intl.DateTimeFormat('en-GB', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
-      }).format(new Date(dateString));
-    } catch (e) {
-      return '';
-    }
+      }).format(new Date(str));
+    } catch (e) { return ''; }
   }
  
   function buildPostCard(post) {
@@ -934,35 +932,27 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     body.appendChild(excerpt);
     body.appendChild(readMore);
     card.appendChild(body);
- 
     return card;
   }
-
+ 
   try {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-    const response = await fetch(proxyUrl);
+    const proxy = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
+    const response = await fetch(proxy);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
  
-    const data = await response.json();
-    const xml = data.contents;
-    if (!xml) throw new Error('Empty response from proxy');
- 
+    const xml = await response.text();
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'application/xml');
-    if (doc.querySelector('parsererror')) throw new Error('RSS parse error');
+    if (doc.querySelector('parsererror')) throw new Error('XML parse error');
  
     const items = Array.from(doc.querySelectorAll('item')).slice(0, POSTS_TO_SHOW);
-    if (items.length === 0) {
-      grid.innerHTML = '';
-      return;
-    }
+    if (items.length === 0) { grid.innerHTML = ''; return; }
  
     const posts = items.map(item => ({
       title : item.querySelector('title')?.textContent?.trim() || 'Untitled',
-      url : item.querySelector('link')?.textContent?.trim()  || blogUrl,
+      url : item.querySelector('link')?.textContent?.trim() || blogUrl,
       publishedAt : item.querySelector('pubDate')?.textContent?.trim() || '',
-      brief : (item.querySelector('description')?.textContent || '')
-        .replace(/<[^>]+>/g, '').trim().slice(0, 180),
+      brief : (item.querySelector('description')?.textContent || '').replace(/<[^>]+>/g, '').trim().slice(0, 180),
       coverImage : item.querySelector('enclosure')?.getAttribute('url') || null,
     }));
  
@@ -975,15 +965,15 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   }
  
 })();
-
+ 
 document.querySelectorAll('.read-more-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const wrap = btn.closest('.service-text-wrap');
     const text = wrap?.querySelector('.service-text');
     const expanded = btn.getAttribute('aria-expanded') ==='true';
-
+ 
     if (!text) return;
-
+ 
     if (expanded) {
       text.classList.remove('expanded');
       btn.setAttribute('aria-expanded', 'false');
