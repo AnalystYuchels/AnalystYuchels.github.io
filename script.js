@@ -631,8 +631,9 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     readBtn.className = 'testimonial-read-btn';
     readBtn.textContent = 'Read more';
     readBtn.setAttribute('aria-expanded', 'false');
-    readBtn.style.display = 'none';
     readBtn.addEventListener('click', () => {
+      stopAutoPermanently();
+      
       const expanded = quote.classList.toggle('expanded');
       readBtn.textContent = expanded ? 'Show less' : 'Read more';
       readBtn.setAttribute('aria-expanded', String(expanded));
@@ -731,23 +732,40 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   }
 
   let autoTimer = null;
+  let userActed = false;
  
   function startAuto() {
+    if (userActed) return;
+
     if (totalCards <= cardsPerPage()) return;
     autoTimer = setInterval(() => goTo((currentPage + 1) % totalPages()), 6000);
   }
  
-  function stopAuto() { clearInterval(autoTimer); }
+  function stopAuto() {
+    clearInterval(autoTimer);
+    autoTimer = null;
+  }
+
+  function stopAutoPermanently() {
+    userActed = true;
+    stopAuto();
+  }
  
   const section = track.closest('.testimonials');
   if (section) {
     section.addEventListener('mouseenter', stopAuto);
-    section.addEventListener('touchstart', stopAuto, { passive: true });
-    section.addEventListener('mouseleave', () => { if (totalCards > 0) startAuto(); });
+    section.addEventListener('mouseleave', startAuto);
   }
 
-  if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentPage - 1));
-  if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentPage + 1));
+  if (prevBtn) prevBtn.addEventListener('click', () => {
+    stopAutoPermanently();
+    goTo(currentPage - 1);
+  });
+
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    stopAutoPermanently();
+    goTo(currentPage + 1);
+  });
  
   track.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft')  goTo(currentPage - 1);
@@ -761,7 +779,10 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   }, { passive: true });
   track.addEventListener('touchend', e => {
     const diff = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) goTo(diff > 0 ? currentPage + 1 : currentPage - 1);
+    if (Math.abs(diff) > 50) {
+      stopAutoPermanently();
+      goTo(diff > 0 ? currentPage + 1 : currentPage -1);
+    }
   }, { passive: true });
 
   // Rebuild on resize
